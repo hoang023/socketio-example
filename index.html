@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo app-chat</title>
+</head>
+<body>
+    <H1>Realtime chat</H1>
+    <div class="container">
+        <ul type="none" id="messages"></ul>
+        <form id="chat-form">
+            <input type="text" id="chat-mes">
+            <button id="send-chat">Gửi</button>
+        </form>
+    </div>
+</body>
+<!-- Gọi thư viện socket.io -->
+    <script src="/socket.io/socket.io.js"></script>  
+    <script>
+        // Khởi tạo một socket tới server
+        const socket = io(); 
+
+        const name = prompt('Tên bạn là gì?');
+        const formChat = document.querySelector('#chat-form');
+        const mesChat = document.querySelector('#chat-mes');
+
+        formChat.addEventListener('submit', (e) =>{
+            e.preventDefault();
+            const message = mesChat.value
+            // Gửi gói tin lên server
+            socket.emit('on-chat',{
+                name,
+                message
+            });
+
+            mesChat.value = ''
+        })
+
+        const message = document.querySelector('#messages')
+        socket.on('chat-channel', (e) =>{
+            const content = document.createElement('li')
+            content.textContent = `${e.name}: ${e.message} `;
+            message.appendChild(content);
+        })
+    </script>
+</html>
